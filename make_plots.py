@@ -72,7 +72,7 @@ def plot_sleep(filename="sleep.csv"):
             colors.append('green')
         else:
             colors.append('yellow')
-    plt.bar(bin_edges[:-1], counts, width=np.diff(bin_edges), color=colors, edgecolor='black')
+    plt.bar(bin_edges[:-1], counts, width=np.diff(bin_edges), color=colors, edgecolor='black', alpha=0.5)
     # plt.axvline(separation_point, color='black', linestyle='--')
     plt.xlabel('Sleep Duration')
     plt.ylabel('Frequency')
@@ -129,6 +129,38 @@ def plot_sleep(filename="sleep.csv"):
     plt.ylabel('Day of Week')
     plt.title('Sleep Duration by Day of Week')
     plt.savefig('sleep_duration_by_day_of_week.png',  bbox_inches='tight')
+    plt.clf()
+
+    # Plot comparing calculated duration to duration reported by smartwatch
+
+    # Drop null values
+    df_notna = df.dropna(subset=['duration_smartwatch'])
+
+    # Convert duration_smartwatch to float
+    df_notna.loc[:, 'duration_smartwatch'] = df_notna['duration_smartwatch'].apply(
+        lambda x: (int(x.split(':')[0]) + int(x.split(':')[1]) / 60.0) if isinstance(x, str) else 0
+    )
+
+    fig = plt.figure()
+    plt.scatter(df_notna['duration'], df_notna['duration_smartwatch'])
+    plt.xlabel('Calculated Duration')
+    plt.ylabel('Smartwatch Duration')
+    tick_labels = {
+        5: '5:00',
+        6: '6:00',
+        7: '7:00',
+        8: '8:00',
+        9: '9:00',
+    }
+    plt.xticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
+    plt.yticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
+    # Diagonal line where y = x
+    min_key = min(tick_labels.keys())
+    max_key = max(tick_labels.keys())
+    plt.plot([min_key, max_key], [min_key, max_key], color='blue', linestyle='--')
+
+    plt.title('Calculated vs Smartwatch Duration')
+    plt.savefig('calculated_vs_smartwatch_duration.png',  bbox_inches='tight')
     plt.clf()
 
 
