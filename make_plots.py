@@ -1,6 +1,7 @@
 import datetime
 import math
 import matplotlib.dates as mdates
+import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -141,10 +142,25 @@ def plot_sleep(filename="sleep.csv"):
         lambda x: (int(x.split(':')[0]) + int(x.split(':')[1]) / 60.0) if isinstance(x, str) else 0
     )
 
-    fig = plt.figure()
-    plt.scatter(df_notna['duration'], df_notna['duration_smartwatch'])
+    fig, ax = plt.subplots()
+
+    # Background colors
+    background_yellow_rect = patches.Rectangle((5,5), 4, 4, color='khaki', zorder=1)
+    ax.add_patch(background_yellow_rect)
+
+    green_vertices = [[9,9], [6,9], [9,6]]
+    green_triangle = patches.Polygon(green_vertices, closed=True, color='lightgreen', zorder=2)
+    ax.add_patch(green_triangle)
+
+    red_vertices = [[5,5], [8,5], [5,8]]
+    red_triangle = patches.Polygon(red_vertices, closed=True, color='lightcoral', zorder=2)
+    ax.add_patch(red_triangle)
+
+    plt.scatter(df_notna['duration'], df_notna['duration_smartwatch'], zorder=5)
     plt.xlabel('Calculated Duration')
     plt.ylabel('Smartwatch Duration')
+    ax.set_xlim(5, 9)
+    ax.set_ylim(5, 9)
     tick_labels = {
         5: '5:00',
         6: '6:00',
@@ -154,11 +170,14 @@ def plot_sleep(filename="sleep.csv"):
     }
     plt.xticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
     plt.yticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
-    # Diagonal line where y = x
     min_key = min(tick_labels.keys())
     max_key = max(tick_labels.keys())
-    plt.plot([min_key, max_key], [min_key, max_key], color='blue', linestyle='--')
-
+    # Dotted lines
+    ax.plot([min_key, max_key], [min_key, max_key], color='blue', linestyle='--', zorder=4)
+    ax.axhline(y=6.5, color='gray', linestyle=':', linewidth=1, zorder=3)
+    ax.axvline(x=6.5, color='gray', linestyle=':', linewidth=1, zorder=3)
+    ax.axhline(y=7.5, color='gray', linestyle=':', linewidth=1, zorder=3)
+    ax.axvline(x=7.5, color='gray', linestyle=':', linewidth=1, zorder=3)
     plt.title('Calculated vs Smartwatch Duration')
     plt.savefig('calculated_vs_smartwatch_duration.png',  bbox_inches='tight')
     plt.clf()
