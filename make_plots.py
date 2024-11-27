@@ -174,6 +174,8 @@ def plot_sleep(filename="sleep.csv"):
     max_key = max(tick_labels.keys())
     # Dotted lines
     ax.plot([min_key, max_key], [min_key, max_key], color='blue', linestyle='--', zorder=4)
+    ax.plot([min_key + 1, max_key], [min_key, max_key - 1], color='gray', linestyle='--', zorder=4)
+    ax.plot([min_key + 2, max_key], [min_key, max_key - 2], color='gray', linestyle='--', zorder=4)
     ax.axhline(y=6.5, color='gray', linestyle=':', linewidth=1, zorder=3)
     ax.axvline(x=6.5, color='gray', linestyle=':', linewidth=1, zorder=3)
     ax.axhline(y=7.5, color='gray', linestyle=':', linewidth=1, zorder=3)
