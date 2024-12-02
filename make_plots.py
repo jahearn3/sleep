@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.lines import Line2D
 
 
 def plot_sleep(filename="sleep.csv"):
@@ -144,23 +145,30 @@ def plot_sleep(filename="sleep.csv"):
 
     fig, ax = plt.subplots()
 
+    ymin = 5.0
+    ry = 6.5  # red-yellow transition
+    yg = 7.5  # yellow-green transition
+    ymax = 9.5
+
     # Background colors
-    background_yellow_rect = patches.Rectangle((5,5), 4, 4, color='khaki', zorder=1)
+    background_yellow_rect = patches.Rectangle((ymin, ymin), ymax - ymin, ymax - ymin, color='khaki', zorder=1)
     ax.add_patch(background_yellow_rect)
 
-    green_vertices = [[9,9], [6,9], [9,6]]
+    green_vertices = [[ymax, ymax], [2 * yg - ymax, ymax], [ymax, 2 * yg - ymax]]
     green_triangle = patches.Polygon(green_vertices, closed=True, color='lightgreen', zorder=2)
     ax.add_patch(green_triangle)
 
-    red_vertices = [[5,5], [8,5], [5,8]]
+    red_vertices = [[ymin, ymin], [2 * ry - ymin, ymin], [ymin, 2 * ry - ymin]]
     red_triangle = patches.Polygon(red_vertices, closed=True, color='lightcoral', zorder=2)
     ax.add_patch(red_triangle)
 
-    plt.scatter(df_notna['duration'], df_notna['duration_smartwatch'], zorder=5)
+    colors = {'Good': 'b', 'Fair': 'k', 'Poor': 'r'}
+
+    plt.scatter(df_notna['duration'], df_notna['duration_smartwatch'], zorder=5, c=df_notna['rating_smartwatch'].map(colors))
     plt.xlabel('Calculated Duration')
     plt.ylabel('Smartwatch Duration')
-    ax.set_xlim(5, 9)
-    ax.set_ylim(5, 9)
+    ax.set_xlim(ymin, ymax)
+    ax.set_ylim(ymin, ymax)
     tick_labels = {
         5: '5:00',
         6: '6:00',
@@ -170,16 +178,16 @@ def plot_sleep(filename="sleep.csv"):
     }
     plt.xticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
     plt.yticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
-    min_key = min(tick_labels.keys())
-    max_key = max(tick_labels.keys())
+    handles = [Line2D([0], [0], marker='o', color='w', markerfacecolor=v, label=k, markersize=8) for k, v in colors.items()]
+    ax.legend(title='Sleep Rating', handles=handles, loc='upper left')
     # Dotted lines
-    ax.plot([min_key, max_key], [min_key, max_key], color='blue', linestyle='--', zorder=4)
-    ax.plot([min_key + 1, max_key], [min_key, max_key - 1], color='gray', linestyle='--', zorder=4)
-    ax.plot([min_key + 2, max_key], [min_key, max_key - 2], color='gray', linestyle='--', zorder=4)
-    ax.axhline(y=6.5, color='gray', linestyle=':', linewidth=1, zorder=3)
-    ax.axvline(x=6.5, color='gray', linestyle=':', linewidth=1, zorder=3)
-    ax.axhline(y=7.5, color='gray', linestyle=':', linewidth=1, zorder=3)
-    ax.axvline(x=7.5, color='gray', linestyle=':', linewidth=1, zorder=3)
+    ax.plot([ymin, ymax], [ymin, ymax], color='blue', linestyle='--', zorder=4)
+    ax.plot([ymin + 1, ymax], [ymin, ymax - 1], color='gray', linestyle='--', zorder=4)
+    ax.plot([ymin + 2, ymax], [ymin, ymax - 2], color='gray', linestyle='--', zorder=4)
+    ax.axhline(y=ry, color='gray', linestyle=':', linewidth=1, zorder=3)
+    ax.axvline(x=ry, color='gray', linestyle=':', linewidth=1, zorder=3)
+    ax.axhline(y=yg, color='gray', linestyle=':', linewidth=1, zorder=3)
+    ax.axvline(x=yg, color='gray', linestyle=':', linewidth=1, zorder=3)
     plt.title('Calculated vs Smartwatch Duration')
     plt.savefig('calculated_vs_smartwatch_duration.png',  bbox_inches='tight')
     plt.clf()
