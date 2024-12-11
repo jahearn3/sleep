@@ -145,7 +145,7 @@ def plot_sleep(filename="sleep.csv"):
 
     fig, ax = plt.subplots()
 
-    ymin = 5.0
+    ymin = 4.5
     ry = 6.5  # red-yellow transition
     yg = 7.5  # yellow-green transition
     ymax = 9.5
