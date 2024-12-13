@@ -51,6 +51,9 @@ def plot_sleep(filename="sleep.csv"):
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
     # Rotate the tick labels for better readability
     plt.xticks(rotation=90)
+    # Add exponential smoothing line
+    df['duration_smooth'] = df['duration'].ewm(alpha=0.05, adjust=False).mean()
+    plt.plot(df['date'], df['duration_smooth'], color='blue')
     plt.savefig('sleep_duration_over_time.png',  bbox_inches='tight')
     plt.clf()
 
