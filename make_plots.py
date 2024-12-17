@@ -10,6 +10,8 @@ from matplotlib.lines import Line2D
 
 
 def plot_sleep(filename="sleep.csv"):
+    ry = 6.5  # red-yellow transition
+    yg = 7.5  # yellow-green transition
     df = pd.read_csv(filename)
     df['start_raw'] = df['start']
     df['stop_raw'] = df['stop']
@@ -40,9 +42,9 @@ def plot_sleep(filename="sleep.csv"):
     plt.title('Sleep Duration Over Time')
     # Add horizontal lines at certain hours
     y_min, y_max = plt.ylim()
-    plt.axhspan(7.5, y_max, facecolor='lightgreen', alpha=0.5)
-    plt.axhspan(6.5, 7.5, facecolor='khaki', alpha=0.5)
-    plt.axhspan(y_min, 6.5, facecolor='lightcoral', alpha=0.5)
+    plt.axhspan(yg, y_max, facecolor='lightgreen', alpha=0.5)
+    plt.axhspan(ry, yg, facecolor='khaki', alpha=0.5)
+    plt.axhspan(y_min, ry, facecolor='lightcoral', alpha=0.5)
     plt.ylim(y_min, y_max)
     # Set the tick locator to ensure proper spacing with a custom interval
     tick_interval = int(len(df['date']) / 7) + 1
@@ -71,9 +73,9 @@ def plot_sleep(filename="sleep.csv"):
     counts, _ = np.histogram(df['duration'], bins=bin_edges)
     colors = []
     for i in range(len(bin_edges) - 1):
-        if bin_edges[i+1] <= 6.5:
+        if bin_edges[i+1] <= ry:
             colors.append('red')
-        elif bin_edges[i] >= 7.5:
+        elif bin_edges[i] >= yg:
             colors.append('green')
         else:
             colors.append('yellow')
@@ -93,9 +95,9 @@ def plot_sleep(filename="sleep.csv"):
         start_time = row['start_time_hr']
         stop_time = row['stop_time_hr']
         c = 'k'
-        if row['duration'] < 6.5:
+        if row['duration'] < ry:
             c = 'r'
-        elif row['duration'] < 7.5:
+        elif row['duration'] < yg:
             c = 'y'
         else:
             c = 'g'
@@ -148,9 +150,7 @@ def plot_sleep(filename="sleep.csv"):
 
     fig, ax = plt.subplots()
 
-    ymin = 4.5
-    ry = 6.5  # red-yellow transition
-    yg = 7.5  # yellow-green transition
+    ymin = 3.75
     ymax = 9.5
 
     # Background colors
@@ -173,6 +173,7 @@ def plot_sleep(filename="sleep.csv"):
     ax.set_xlim(ymin, ymax)
     ax.set_ylim(ymin, ymax)
     tick_labels = {
+        4: '4:00',
         5: '5:00',
         6: '6:00',
         7: '7:00',
