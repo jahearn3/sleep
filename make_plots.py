@@ -196,5 +196,55 @@ def plot_sleep(filename="sleep.csv"):
     plt.savefig('calculated_vs_smartwatch_duration.png',  bbox_inches='tight')
     plt.clf()
 
+    # Plot start time with moving average
+    fig = plt.figure()
+    plt.plot(df['date'], df['start_time_hr'], color='black')
+    plt.scatter(df['date'], df['start_time_hr'], color='black')
+    plt.xlabel('Date')
+    plt.ylabel('Sleep Start Time')
+    plt.title('Sleep Start Time Over Time')
+    # Add horizontal lines at certain hours
+    # y_min, y_max = plt.ylim()
+    # plt.axhspan(yg, y_max, facecolor='lightgreen', alpha=0.5)
+    # plt.axhspan(ry, yg, facecolor='khaki', alpha=0.5)
+    # plt.axhspan(y_min, ry, facecolor='lightcoral', alpha=0.5)
+    # plt.ylim(y_min, y_max)
+    # x-ticks
+    tick_interval = int(len(df['date']) / 7) + 1
+    plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=tick_interval))
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    plt.xticks(rotation=90)
+    # y-ticks
+    tick_labels = {
+        -2: '10:00pm',
+        -1: '11:00pm',
+        0: '12:00am',
+        1: '1:00am',
+        2: '2:00am',
+    }
+    plt.yticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
+    # Add exponential smoothing line
+    df['start_smooth'] = df['start_time_hr'].ewm(alpha=0.05, adjust=False).mean()
+    plt.plot(df['date'], df['start_smooth'], color='blue')
+    plt.savefig('sleep_start_time.png',  bbox_inches='tight')
+    plt.clf()
+
+    # Sleep Start Time by Day of Week
+    fig = plt.figure()
+    ax = sns.boxplot(data=df, x='start_time_hr', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
+    plt.xlabel('Sleep Start Time')
+    plt.ylabel('Day of Week')
+    plt.title('Sleep Start Time by Day of Week')
+    tick_labels = {
+        -2: '10:00pm',
+        -1: '11:00pm',
+        0: '12:00am',
+        1: '1:00am',
+        2: '2:00am',
+    }
+    plt.xticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
+    plt.savefig('sleep_start_time_by_day_of_week.png',  bbox_inches='tight')
+    plt.clf()
+
 
 plot_sleep()
