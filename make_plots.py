@@ -5,6 +5,7 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import process_data
 import seaborn as sns
 from matplotlib.lines import Line2D
 
@@ -12,26 +13,27 @@ from matplotlib.lines import Line2D
 def plot_sleep(filename="sleep.csv"):
     ry = 6.5  # red-yellow transition
     yg = 7.5  # yellow-green transition
-    df = pd.read_csv(filename)
-    df['start_raw'] = df['start']
-    df['stop_raw'] = df['stop']
-    midnight = datetime.time()
-    time_columns = ['start', 'stop']
-    for ts in time_columns:
-        if ts in df.columns:
-            df[ts] = pd.to_datetime(df['date'] + ' ' + df[ts], errors='coerce')
+    # df = pd.read_csv(filename)
+    # df['start_raw'] = df['start']
+    # df['stop_raw'] = df['stop']
+    # midnight = datetime.time()
+    # time_columns = ['start', 'stop']
+    # for ts in time_columns:
+    #     if ts in df.columns:
+    #         df[ts] = pd.to_datetime(df['date'] + ' ' + df[ts], errors='coerce')
 
-    df['start'] = pd.to_datetime(df['start'])
-    # add 12 hours to the start time
-    df['start'] = df['start'] + datetime.timedelta(hours=12)
-    # hours after midnight of the day prior
-    df['start_time_hr'] = (df['start'] - pd.to_datetime(df['date'] + ' ' + str(midnight))).dt.total_seconds()/(60*60) - 24
-    # add one day to the stop time
-    df['stop'] = pd.to_datetime(df['stop']) + datetime.timedelta(days=1)
-    # hours after midnight of the day prior
-    df['stop_time_hr'] = (df['stop'] - pd.to_datetime(df['date'] + ' ' + str(midnight))).dt.total_seconds()/(60*60) - 24
-    df['date'] = pd.to_datetime(df['date'])
-    df['duration'] = (df['stop'] - df['start']).dt.total_seconds() / (60 * 60)
+    # df['start'] = pd.to_datetime(df['start'])
+    # # add 12 hours to the start time
+    # df['start'] = df['start'] + datetime.timedelta(hours=12)
+    # # hours after midnight of the day prior
+    # df['start_time_hr'] = (df['start'] - pd.to_datetime(df['date'] + ' ' + str(midnight))).dt.total_seconds()/(60*60) - 24
+    # # add one day to the stop time
+    # df['stop'] = pd.to_datetime(df['stop']) + datetime.timedelta(days=1)
+    # # hours after midnight of the day prior
+    # df['stop_time_hr'] = (df['stop'] - pd.to_datetime(df['date'] + ' ' + str(midnight))).dt.total_seconds()/(60*60) - 24
+    # df['date'] = pd.to_datetime(df['date'])
+    # df['duration'] = (df['stop'] - df['start']).dt.total_seconds() / (60 * 60)
+    df = process_data.process_data(filename="sleep.csv")
 
     # plot duration vs date
     fig = plt.figure()
@@ -151,7 +153,7 @@ def plot_sleep(filename="sleep.csv"):
     fig, ax = plt.subplots()
 
     ymin = 3.75
-    ymax = 9.5
+    ymax = 11.5
 
     # Background colors
     background_yellow_rect = patches.Rectangle((ymin, ymin), ymax - ymin, ymax - ymin, color='khaki', zorder=1)
@@ -179,6 +181,8 @@ def plot_sleep(filename="sleep.csv"):
         7: '7:00',
         8: '8:00',
         9: '9:00',
+        10: '10:00',
+        11: '11:00',
     }
     plt.xticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
     plt.yticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
@@ -216,6 +220,7 @@ def plot_sleep(filename="sleep.csv"):
     plt.xticks(rotation=90)
     # y-ticks
     tick_labels = {
+        -3: '9:00pm',
         -2: '10:00pm',
         -1: '11:00pm',
         0: '12:00am',
@@ -236,6 +241,7 @@ def plot_sleep(filename="sleep.csv"):
     plt.ylabel('Day of Week')
     plt.title('Sleep Start Time by Day of Week')
     tick_labels = {
+        -3: '9:00pm',
         -2: '10:00pm',
         -1: '11:00pm',
         0: '12:00am',
