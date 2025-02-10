@@ -48,6 +48,6 @@ plt.savefig('feature_correlation_matrix.png',  bbox_inches='tight')
 plt.clf()
 
 # Extract correlations with the target variable
-target_correlation = correlation_matrix['rating_encoded'].drop('rating_encoded')  # Drop self-correlation
-print("Correlations with rating_smartwatch:")
+target_correlation = correlation_matrix['score_smartwatch'].drop('score_smartwatch')  # Drop self-correlation
+print("Correlations with score_smartwatch:")
 print(target_correlation.sort_values(ascending=False))
