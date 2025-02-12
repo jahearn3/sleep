@@ -13,26 +13,6 @@ from matplotlib.lines import Line2D
 def plot_sleep(filename="sleep.csv"):
     ry = 6.5  # red-yellow transition
     yg = 7.5  # yellow-green transition
-    # df = pd.read_csv(filename)
-    # df['start_raw'] = df['start']
-    # df['stop_raw'] = df['stop']
-    # midnight = datetime.time()
-    # time_columns = ['start', 'stop']
-    # for ts in time_columns:
-    #     if ts in df.columns:
-    #         df[ts] = pd.to_datetime(df['date'] + ' ' + df[ts], errors='coerce')
-
-    # df['start'] = pd.to_datetime(df['start'])
-    # # add 12 hours to the start time
-    # df['start'] = df['start'] + datetime.timedelta(hours=12)
-    # # hours after midnight of the day prior
-    # df['start_time_hr'] = (df['start'] - pd.to_datetime(df['date'] + ' ' + str(midnight))).dt.total_seconds()/(60*60) - 24
-    # # add one day to the stop time
-    # df['stop'] = pd.to_datetime(df['stop']) + datetime.timedelta(days=1)
-    # # hours after midnight of the day prior
-    # df['stop_time_hr'] = (df['stop'] - pd.to_datetime(df['date'] + ' ' + str(midnight))).dt.total_seconds()/(60*60) - 24
-    # df['date'] = pd.to_datetime(df['date'])
-    # df['duration'] = (df['stop'] - df['start']).dt.total_seconds() / (60 * 60)
     df = process_data.process_data(filename="sleep.csv")
 
     # plot duration vs date
@@ -131,9 +111,9 @@ def plot_sleep(filename="sleep.csv"):
     plt.savefig('sleep_times_each_day.png',  bbox_inches='tight')
     plt.clf()
 
-    # Violin plot of sleep duration with day of week as hue
+    # Box plot of sleep duration with day of week as hue
     fig = plt.figure()
-    ax = sns.violinplot(data=df, x='duration', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
+    ax = sns.boxplot(data=df, x='duration', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
     plt.xlabel('Sleep Duration')
     plt.ylabel('Day of Week')
     plt.title('Sleep Duration by Day of Week')
@@ -169,7 +149,10 @@ def plot_sleep(filename="sleep.csv"):
 
     colors = {'Good': 'b', 'Fair': 'k', 'Poor': 'r'}
 
-    plt.scatter(df_notna['duration'], df_notna['duration_smartwatch'], zorder=5, c=df_notna['rating_smartwatch'].map(colors))
+    # Halo around most recent sleep session
+    most_recent = df_notna.iloc[-1]
+    ax.scatter(most_recent['duration'], most_recent['duration_smartwatch'], zorder=4, c='#FFFF14', s=100)
+    ax.scatter(df_notna['duration'], df_notna['duration_smartwatch'], zorder=5, c=df_notna['rating_smartwatch'].map(colors))
     plt.xlabel('Calculated Duration')
     plt.ylabel('Smartwatch Duration')
     ax.set_xlim(ymin, ymax)
