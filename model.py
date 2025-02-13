@@ -10,7 +10,7 @@ df = process_data.process_data(filename="sleep.csv")
 df = df.dropna()
 
 # Encode the target variable
-df['rating_encoded'] = df['rating_smartwatch'].map({'Good': 2, 'Fair': 1, 'Poor': 0})
+# df['rating_encoded'] = df['rating_smartwatch'].map({'Good': 2, 'Fair': 1, 'Poor': 0})
 
 # One-hot encode the 'day_of_week' column
 df = pd.get_dummies(df, columns=['day_of_week'], drop_first=True)  # drop_first to avoid multicollinearity
@@ -42,7 +42,9 @@ correlation_matrix = df.corr()
 
 # Visualize the correlation matrix
 plt.figure(figsize=(12, 10))
-sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap='coolwarm', square=True, cbar_kws={"shrink": .8})
+sns.heatmap(correlation_matrix, annot=True, fmt=".2f",
+            cmap='coolwarm', vmin=-1, vmax=1, center=0,
+            square=True, cbar_kws={"shrink": .8})
 plt.title('Feature Correlation Matrix')
 plt.savefig('feature_correlation_matrix.png',  bbox_inches='tight')
 plt.clf()
