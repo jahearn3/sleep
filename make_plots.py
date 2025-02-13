@@ -47,11 +47,6 @@ def plot_sleep(filename="sleep.csv"):
     bin_min = math.floor(min(df['duration']) / bin_interval) * bin_interval
     bin_max = math.ceil(max(df['duration']) / bin_interval) * bin_interval
     bin_edges = np.arange(bin_min, bin_max + bin_interval, bin_interval)
-    # cmap = plt.cm.get_cmap('RdYlGn')
-    # n, bins, patches = plt.hist(df['duration'], bins=bin_edges)
-    # for patch, bin_val in zip(patches, bins):
-    #     color_val = (bin_val - min(bins)) / (max(bins) - min(bins))
-        # patch.set_facecolor(cmap(color_val))
     counts, _ = np.histogram(df['duration'], bins=bin_edges)
     colors = []
     for i in range(len(bin_edges) - 1):
@@ -219,7 +214,8 @@ def plot_sleep(filename="sleep.csv"):
 
     # Sleep Start Time by Day of Week
     fig = plt.figure()
-    ax = sns.boxplot(data=df, x='start_time_hr', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
+    ax = sns.boxplot(data=df, x='start_time_hr', y='day_of_week', 
+                     order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
     plt.xlabel('Sleep Start Time')
     plt.ylabel('Day of Week')
     plt.title('Sleep Start Time by Day of Week')
@@ -233,6 +229,33 @@ def plot_sleep(filename="sleep.csv"):
     }
     plt.xticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
     plt.savefig('sleep_start_time_by_day_of_week.png',  bbox_inches='tight')
+    plt.clf()
+
+    # Histogram of smartwatch score
+    bin_interval = 5
+    fig = plt.figure()
+    bin_min = 40
+    bin_max = 100
+    bin_edges = np.arange(bin_min, bin_max, bin_interval)
+    counts, _ = np.histogram(df_notna['score_smartwatch'], bins=bin_edges)
+    colors = []
+    for i in range(len(bin_edges) - 1):
+        if bin_edges[i+1] <= 60:
+            colors.append('red')
+        elif bin_edges[i] >= 80:
+            colors.append('green')
+        else:
+            colors.append('yellow')
+    plt.bar(bin_edges[:-1] + (bin_interval / 2),
+            counts,
+            width=np.diff(bin_edges),
+            color=colors,
+            edgecolor='black',
+            alpha=0.5)
+    plt.xlabel('Score')
+    plt.ylabel('Frequency')
+    plt.title('Smartwatch Score Histogram')
+    plt.savefig('smartwatch_score_histogram.png',  bbox_inches='tight')
     plt.clf()
 
 
