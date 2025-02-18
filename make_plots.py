@@ -147,7 +147,7 @@ def plot_sleep(filename="sleep.csv"):
     # Halo around most recent sleep session
     most_recent = df_notna.iloc[-1]
     ax.scatter(most_recent['duration'], most_recent['duration_smartwatch'], zorder=4, c='#FFFF14', s=100)
-    ax.scatter(df_notna['duration'], df_notna['duration_smartwatch'], zorder=5, c=df_notna['rating_smartwatch'].map(colors))
+    ax.scatter(df_notna['duration'], df_notna['duration_smartwatch'], zorder=5, c=df_notna['rating_smartwatch'].map(colors), s=10)
     plt.xlabel('Calculated Duration')
     plt.ylabel('Smartwatch Duration')
     ax.set_xlim(ymin, ymax)
@@ -252,10 +252,10 @@ def plot_sleep(filename="sleep.csv"):
             color=colors,
             edgecolor='black',
             alpha=0.5)
-    plt.xlabel('Score')
+    plt.xlabel('Score according to Smartwatch')
     plt.ylabel('Frequency')
-    plt.title('Smartwatch Score Histogram')
-    plt.savefig('smartwatch_score_histogram.png',  bbox_inches='tight')
+    plt.title('Sleep Score Histogram')
+    plt.savefig('sleep_score_histogram.png',  bbox_inches='tight')
     plt.clf()
 
 
