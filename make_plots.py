@@ -97,7 +97,7 @@ def plot_sleep(filename="sleep.csv"):
         9: '9:00',
         10: '10:00',
     }
-    plt.xticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
+    plt.xticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()), rotation=45)
     ax.set_xlim(df['start_time_hr'].min() - 0.5, df['stop_time_hr'].max() + 0.5)
 
     plt.xlabel('Time')
