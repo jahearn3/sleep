@@ -127,7 +127,7 @@ def plot_sleep(filename="sleep.csv"):
 
     fig, ax = plt.subplots()
 
-    ymin = 3.75
+    ymin = 3.00
     ymax = 11.5
 
     # Background colors

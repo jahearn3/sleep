@@ -26,6 +26,10 @@ def convert_to_minutes(duration):
 
 df['duration_minutes'] = df['duration_smartwatch'].apply(convert_to_minutes)
 
+# Convert hour finished eating/screentime by to time interval between eating/screentime and sleep time
+df['hours_between_eat_and_sleep'] = 12 + df['start_time_hr'] - df['hour_finished_eating_by']
+df['hours_between_screen_and_sleep'] = 12 + df['start_time_hr'] - df['hour_finished_screen_time_by']
+
 # Drop columns
 df = df.drop(columns=[
     'date',
@@ -35,7 +39,10 @@ df = df.drop(columns=[
     'stop_raw',
     'duration_smartwatch',
     'rating_smartwatch',
-    'melatonin'])
+    'melatonin',
+    'hour_finished_eating_by',
+    'hour_finished_screen_time_by',
+    ])
 
 # Compute the correlation matrix
 correlation_matrix = df.corr()
