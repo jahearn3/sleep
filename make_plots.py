@@ -10,11 +10,7 @@ import seaborn as sns
 from matplotlib.lines import Line2D
 
 
-def plot_sleep(filename="sleep.csv"):
-    ry = 6.5  # red-yellow transition
-    yg = 7.5  # yellow-green transition
-    df = process_data.process_data(filename="sleep.csv")
-
+def plot_sleep_duration_over_time(df, ry, yg):
     # plot duration vs date
     fig = plt.figure()
     plt.plot(df['date'], df['duration'], color='black')
@@ -41,8 +37,8 @@ def plot_sleep(filename="sleep.csv"):
     plt.savefig('sleep_duration_over_time.png',  bbox_inches='tight')
     plt.clf()
 
-    # histogram of duration in intervals of 0.25
-    bin_interval = 0.25
+
+def plot_sleep_duration_histogram(df, ry, yg, bin_interval=0.25):
     fig = plt.figure()
     bin_min = math.floor(min(df['duration']) / bin_interval) * bin_interval
     bin_max = math.ceil(max(df['duration']) / bin_interval) * bin_interval
@@ -57,13 +53,14 @@ def plot_sleep(filename="sleep.csv"):
         else:
             colors.append('yellow')
     plt.bar(bin_edges[:-1], counts, width=np.diff(bin_edges), color=colors, edgecolor='black', alpha=0.5)
-    # plt.axvline(separation_point, color='black', linestyle='--')
     plt.xlabel('Sleep Duration')
     plt.ylabel('Frequency')
     plt.title('Sleep Duration Histogram')
     plt.savefig('sleep_duration_histogram.png',  bbox_inches='tight')
     plt.clf()
 
+
+def plot_sleep_times_each_day(df, ry, yg):
     # plot lines for each day
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -106,6 +103,8 @@ def plot_sleep(filename="sleep.csv"):
     plt.savefig('sleep_times_each_day.png',  bbox_inches='tight')
     plt.clf()
 
+
+def plot_sleep_duration_by_day_of_week(df):
     # Box plot of sleep duration with day of week as hue
     fig = plt.figure()
     ax = sns.boxplot(data=df, x='duration', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
@@ -115,19 +114,12 @@ def plot_sleep(filename="sleep.csv"):
     plt.savefig('sleep_duration_by_day_of_week.png',  bbox_inches='tight')
     plt.clf()
 
+
+def plot_calculated_vs_smartwatch_duration(df_notna, ry, yg):
     # Plot comparing calculated duration to duration reported by smartwatch
-
-    # Drop null values
-    df_notna = df.dropna(subset=['duration_smartwatch'])
-
-    # Convert duration_smartwatch to float
-    df_notna.loc[:, 'duration_smartwatch'] = df_notna['duration_smartwatch'].apply(
-        lambda x: (int(x.split(':')[0]) + int(x.split(':')[1]) / 60.0) if isinstance(x, str) else 0
-    )
-
     fig, ax = plt.subplots()
 
-    ymin = 3.00
+    ymin = 2.75
     ymax = 11.5
 
     # Background colors
@@ -178,6 +170,8 @@ def plot_sleep(filename="sleep.csv"):
     plt.savefig('calculated_vs_smartwatch_duration.png',  bbox_inches='tight')
     plt.clf()
 
+
+def plot_sleep_start_time(df):
     # Plot start time with moving average
     fig = plt.figure()
     plt.plot(df['date'], df['start_time_hr'], color='black')
@@ -185,12 +179,6 @@ def plot_sleep(filename="sleep.csv"):
     plt.xlabel('Date')
     plt.ylabel('Sleep Start Time')
     plt.title('Sleep Start Time Over Time')
-    # Add horizontal lines at certain hours
-    # y_min, y_max = plt.ylim()
-    # plt.axhspan(yg, y_max, facecolor='lightgreen', alpha=0.5)
-    # plt.axhspan(ry, yg, facecolor='khaki', alpha=0.5)
-    # plt.axhspan(y_min, ry, facecolor='lightcoral', alpha=0.5)
-    # plt.ylim(y_min, y_max)
     # x-ticks
     tick_interval = int(len(df['date']) / 7) + 1
     plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=tick_interval))
@@ -212,6 +200,8 @@ def plot_sleep(filename="sleep.csv"):
     plt.savefig('sleep_start_time.png',  bbox_inches='tight')
     plt.clf()
 
+
+def plot_sleep_start_time_by_day_of_week(df):
     # Sleep Start Time by Day of Week
     fig = plt.figure()
     ax = sns.boxplot(data=df, x='start_time_hr', y='day_of_week', 
@@ -231,6 +221,8 @@ def plot_sleep(filename="sleep.csv"):
     plt.savefig('sleep_start_time_by_day_of_week.png',  bbox_inches='tight')
     plt.clf()
 
+
+def plot_sleep_score_histogram(df_notna):
     # Histogram of smartwatch score
     bin_interval = 5
     fig = plt.figure()
@@ -257,6 +249,29 @@ def plot_sleep(filename="sleep.csv"):
     plt.title('Sleep Score Histogram')
     plt.savefig('sleep_score_histogram.png',  bbox_inches='tight')
     plt.clf()
+
+
+def plot_sleep(filename="sleep.csv"):
+    ry = 6.5  # red-yellow transition
+    yg = 7.5  # yellow-green transition
+    df = process_data.process_data(filename="sleep.csv")
+
+    # Drop null values
+    df_notna = df.dropna(subset=['duration_smartwatch'])
+
+    # Convert duration_smartwatch to float
+    df_notna.loc[:, 'duration_smartwatch'] = df_notna['duration_smartwatch'].apply(
+        lambda x: (int(x.split(':')[0]) + int(x.split(':')[1]) / 60.0) if isinstance(x, str) else 0
+    )
+
+    plot_sleep_duration_over_time(df, ry, yg)
+    plot_sleep_duration_histogram(df, ry, yg)
+    plot_sleep_times_each_day(df, ry, yg)
+    plot_sleep_duration_by_day_of_week(df)
+    plot_calculated_vs_smartwatch_duration(df_notna, ry, yg)
+    plot_sleep_start_time(df)
+    plot_sleep_start_time_by_day_of_week(df)
+    plot_sleep_score_histogram(df_notna)
 
 
 plot_sleep()
