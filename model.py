@@ -2,6 +2,7 @@ import pandas as pd
 import process_data
 import seaborn as sns
 import matplotlib.pyplot as plt
+import make_plots as mp
 
 
 df = process_data.process_data(filename="sleep.csv")
@@ -24,7 +25,7 @@ def convert_to_minutes(duration):
     return hours * 60 + minutes
 
 
-df['duration_minutes'] = df['duration_smartwatch'].apply(convert_to_minutes)
+df['duration_smartwatch'] = df['duration_smartwatch'].apply(convert_to_minutes)
 
 # Convert hour finished eating/screentime by to time interval between eating/screentime and sleep time
 df['hours_between_eat_and_sleep'] = 12 + df['start_time_hr'] - df['hour_finished_eating_by']
@@ -37,7 +38,6 @@ df = df.drop(columns=[
     'stop',
     'start_raw',
     'stop_raw',
-    'duration_smartwatch',
     'rating_smartwatch',
     'melatonin',
     'hour_finished_eating_by',
@@ -47,14 +47,7 @@ df = df.drop(columns=[
 # Compute the correlation matrix
 correlation_matrix = df.corr()
 
-# Visualize the correlation matrix
-plt.figure(figsize=(12, 10))
-sns.heatmap(correlation_matrix, annot=True, fmt=".2f",
-            cmap='coolwarm', vmin=-1, vmax=1, center=0,
-            square=True, cbar_kws={"shrink": .8})
-plt.title('Feature Correlation Matrix')
-plt.savefig('feature_correlation_matrix.png',  bbox_inches='tight')
-plt.clf()
+mp.plot_feature_correlation_matrix(correlation_matrix)
 
 # Extract correlations with the target variable
 target_correlation = correlation_matrix['score_smartwatch'].drop('score_smartwatch')  # Drop self-correlation

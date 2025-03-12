@@ -251,6 +251,17 @@ def plot_sleep_score_histogram(df_notna):
     plt.clf()
 
 
+def plot_feature_correlation_matrix(correlation_matrix):
+    # Visualize the correlation matrix
+    plt.figure(figsize=(12, 10))
+    sns.heatmap(correlation_matrix, annot=True, fmt=".2f",
+                cmap='coolwarm', vmin=-1, vmax=1, center=0,
+                square=True, cbar_kws={"shrink": .8})
+    plt.title('Feature Correlation Matrix')
+    plt.savefig('feature_correlation_matrix.png',  bbox_inches='tight')
+    plt.clf()
+
+
 def plot_sleep(filename="sleep.csv"):
     ry = 6.5  # red-yellow transition
     yg = 7.5  # yellow-green transition
