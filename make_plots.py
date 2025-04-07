@@ -106,8 +106,9 @@ def plot_sleep_times_each_day(df, ry, yg):
 
 def plot_sleep_duration_by_day_of_week(df):
     # Box plot of sleep duration with day of week as hue
-    fig = plt.figure()
-    ax = sns.boxplot(data=df, x='duration', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
+    plt.figure()
+    sns.boxplot(data=df, x='duration', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
+    sns.swarmplot(data=df, x='duration', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], dodge=True)
     plt.xlabel('Sleep Duration')
     plt.ylabel('Day of Week')
     plt.title('Sleep Duration by Day of Week')
@@ -203,9 +204,11 @@ def plot_sleep_start_time(df):
 
 def plot_sleep_start_time_by_day_of_week(df):
     # Sleep Start Time by Day of Week
-    fig = plt.figure()
-    ax = sns.boxplot(data=df, x='start_time_hr', y='day_of_week', 
-                     order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
+    plt.figure()
+    sns.boxplot(data=df, x='start_time_hr', y='day_of_week', 
+                    order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
+    sns.swarmplot(data=df, x='start_time_hr', y='day_of_week', dodge=True,
+                    order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
     plt.xlabel('Sleep Start Time')
     plt.ylabel('Day of Week')
     plt.title('Sleep Start Time by Day of Week')
