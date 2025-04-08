@@ -265,6 +265,24 @@ def plot_feature_correlation_matrix(correlation_matrix):
     plt.clf()
 
 
+def plot_sleep_score_vs_duration_smartwatch(df_notna):
+    # Scatter plot of duration_smartwatch vs score_smartwatch
+    fig, ax = plt.subplots()
+    colors = {'Good': 'c', 'Fair': 'gray', 'Poor': 'r'}
+    # Halo around most recent sleep session
+    most_recent = df_notna.iloc[-1]
+    ax.scatter(most_recent['duration_smartwatch'], most_recent['score_smartwatch'], zorder=4, c='#FFFF14', s=100)
+    ax.scatter(df_notna['duration_smartwatch'], df_notna['score_smartwatch'], zorder=5, c=df_notna['rating_smartwatch'].map(colors), s=10)
+    # sns.scatterplot(data=df_notna, x='duration_smartwatch', y='score_smartwatch', hue='rating_smartwatch')
+    plt.title('Sleep Score vs Duration')
+    plt.xlabel('Smartwatch Duration (hours)')
+    plt.ylabel('Sleep Score')
+    handles = [Line2D([0], [0], marker='o', color='w', markerfacecolor=v, label=k, markersize=8) for k, v in colors.items()]
+    plt.legend(title='Sleep Rating', handles=handles, loc='upper left')
+    plt.savefig('sleep_score_vs_duration.png',  bbox_inches='tight')
+    plt.clf()
+
+
 def plot_sleep(filename="sleep.csv"):
     ry = 6.5  # red-yellow transition
     yg = 7.5  # yellow-green transition
@@ -286,6 +304,7 @@ def plot_sleep(filename="sleep.csv"):
     plot_sleep_start_time(df)
     plot_sleep_start_time_by_day_of_week(df)
     plot_sleep_score_histogram(df_notna)
+    plot_sleep_score_vs_duration_smartwatch(df_notna)
 
 
 plot_sleep()
