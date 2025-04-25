@@ -311,10 +311,17 @@ def plot_sleep_score_vs_day_of_week(df):
     # Box plot of sleep score with day of week as hue
     plt.figure()
     sns.boxplot(data=df, x='score_smartwatch', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
-    # sns.swarmplot(data=df, x='score_smartwatch', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], dodge=True, palette=df['score_smartwatch'].apply(get_color), hue='rating_smartwatch')
-    sns.swarmplot(data=df, x='score_smartwatch', y='day_of_week', 
-               order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], 
-               dodge=True, hue='score_category', palette=palette, legend=False)
+    sns.swarmplot(data=df, x='score_smartwatch', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], dodge=True) #, palette=df['score_smartwatch'].apply(get_color), hue='rating_smartwatch')
+    # sns.swarmplot(data=df, x='score_smartwatch', y='day_of_week', 
+    #            order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], 
+    #            dodge=True, hue='score_category', palette=palette, legend=False)
+    # Green background for good
+    x_min, x_max = plt.xlim()
+    plt.axvspan(80, x_max, facecolor='lightgreen', alpha=0.5)
+    plt.axvspan(60, 80, facecolor='khaki', alpha=0.5)
+    plt.axvspan(x_min, 60, facecolor='lightcoral', alpha=0.5)
+    plt.xlim(x_min, x_max)
+
     plt.xlabel('Sleep Score')
     plt.ylabel('Day of Week')
     plt.title('Sleep Score by Day of Week')
