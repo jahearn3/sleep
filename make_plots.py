@@ -104,11 +104,16 @@ def plot_sleep_times_each_day(df, ry, yg):
     plt.clf()
 
 
-def plot_sleep_duration_by_day_of_week(df):
+def plot_sleep_duration_by_day_of_week(df, ry, yg):
     # Box plot of sleep duration with day of week as hue
     plt.figure()
     sns.boxplot(data=df, x='duration', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
     sns.swarmplot(data=df, x='duration', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], dodge=True)
+    x_min, x_max = plt.xlim()
+    plt.axvspan(yg, x_max, facecolor='lightgreen', alpha=0.5)
+    plt.axvspan(ry, yg, facecolor='khaki', alpha=0.5)
+    plt.axvspan(x_min, ry, facecolor='lightcoral', alpha=0.5)
+    plt.xlim(x_min, x_max)
     plt.xlabel('Sleep Duration')
     plt.ylabel('Day of Week')
     plt.title('Sleep Duration by Day of Week')
@@ -283,45 +288,16 @@ def plot_sleep_score_vs_duration_smartwatch(df_notna):
     plt.clf()
 
 
-def get_color(score):
-    if score >= 80:
-        return 'green'
-    elif score < 60:
-        return 'red'
-    else:
-        return 'blue'
-
-
-def get_color_category(score):
-    if score >= 80:
-        return 'High'
-    elif score < 60:
-        return 'Low'
-    else:
-        return 'Medium'
-
-
 def plot_sleep_score_vs_day_of_week(df):
-    df['score_category'] = df['score_smartwatch'].apply(get_color_category)
-    palette = {
-        'High': 'green',
-        'Medium': 'blue',  # or any other color for medium scores
-        'Low': 'red'
-    }
     # Box plot of sleep score with day of week as hue
     plt.figure()
     sns.boxplot(data=df, x='score_smartwatch', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
-    sns.swarmplot(data=df, x='score_smartwatch', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], dodge=True) #, palette=df['score_smartwatch'].apply(get_color), hue='rating_smartwatch')
-    # sns.swarmplot(data=df, x='score_smartwatch', y='day_of_week', 
-    #            order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], 
-    #            dodge=True, hue='score_category', palette=palette, legend=False)
-    # Green background for good
+    sns.swarmplot(data=df, x='score_smartwatch', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], dodge=True)
     x_min, x_max = plt.xlim()
     plt.axvspan(80, x_max, facecolor='lightgreen', alpha=0.5)
     plt.axvspan(60, 80, facecolor='khaki', alpha=0.5)
     plt.axvspan(x_min, 60, facecolor='lightcoral', alpha=0.5)
     plt.xlim(x_min, x_max)
-
     plt.xlabel('Sleep Score')
     plt.ylabel('Day of Week')
     plt.title('Sleep Score by Day of Week')
@@ -345,7 +321,7 @@ def plot_sleep(filename="sleep.csv"):
     plot_sleep_duration_over_time(df, ry, yg)
     plot_sleep_duration_histogram(df, ry, yg)
     plot_sleep_times_each_day(df, ry, yg)
-    plot_sleep_duration_by_day_of_week(df)
+    plot_sleep_duration_by_day_of_week(df, ry, yg)
     plot_calculated_vs_smartwatch_duration(df_notna, ry, yg)
     plot_sleep_start_time(df)
     plot_sleep_start_time_by_day_of_week(df)
