@@ -228,6 +228,14 @@ def plot_sleep_start_time_by_day_of_week(df):
     plt.xticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
     plt.savefig('sleep_start_time_by_day_of_week.png',  bbox_inches='tight')
     plt.clf()
+    # Print mean sleep start time for each day of the week
+    median_start_times = df.groupby('day_of_week')['start_time_hr'].median()
+    # Add 12 to each
+    median_start_times = median_start_times.apply(lambda x: x + 12 if x < 0 else x)
+    # Convert from decimal to hh:mm
+    median_start_times = median_start_times.apply(lambda x: f"{int(x)}:{int((x - int(x)) * 60):02d}")
+    print("Median Sleep Start Time by Day of Week:")
+    print(median_start_times)
 
 
 def plot_sleep_score_histogram(df_notna):
