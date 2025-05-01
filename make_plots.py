@@ -1,10 +1,8 @@
-import datetime
 import math
 import matplotlib.dates as mdates
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import process_data
 import seaborn as sns
 from matplotlib.lines import Line2D
@@ -12,7 +10,6 @@ from matplotlib.lines import Line2D
 
 def plot_sleep_duration_over_time(df, ry, yg):
     # plot duration vs date
-    fig = plt.figure()
     plt.plot(df['date'], df['duration'], color='black')
     plt.scatter(df['date'], df['duration'], color='black')
     plt.xlabel('Date')
@@ -26,7 +23,9 @@ def plot_sleep_duration_over_time(df, ry, yg):
     plt.ylim(y_min, y_max)
     # Set the tick locator to ensure proper spacing with a custom interval
     tick_interval = int(len(df['date']) / 7) + 1
-    plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=tick_interval))
+    plt.gca().xaxis.set_major_locator(
+        mdates.DayLocator(interval=tick_interval)
+    )
     # Set the tick formatter to display your desired date format
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
     # Rotate the tick labels for better readability
@@ -39,7 +38,6 @@ def plot_sleep_duration_over_time(df, ry, yg):
 
 
 def plot_sleep_duration_histogram(df, ry, yg, bin_interval=0.25):
-    fig = plt.figure()
     bin_min = math.floor(min(df['duration']) / bin_interval) * bin_interval
     bin_max = math.ceil(max(df['duration']) / bin_interval) * bin_interval
     bin_edges = np.arange(bin_min, bin_max + bin_interval, bin_interval)
@@ -52,7 +50,10 @@ def plot_sleep_duration_histogram(df, ry, yg, bin_interval=0.25):
             colors.append('green')
         else:
             colors.append('yellow')
-    plt.bar(bin_edges[:-1], counts, width=np.diff(bin_edges), color=colors, edgecolor='black', alpha=0.5)
+    plt.bar(
+        bin_edges[:-1], counts, width=np.diff(bin_edges), color=colors,
+        edgecolor='black', alpha=0.5
+    )
     plt.xlabel('Sleep Duration')
     plt.ylabel('Frequency')
     plt.title('Sleep Duration Histogram')
@@ -94,8 +95,14 @@ def plot_sleep_times_each_day(df, ry, yg):
         9: '9:00',
         10: '10:00',
     }
-    plt.xticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()), rotation=45)
-    ax.set_xlim(df['start_time_hr'].min() - 0.5, df['stop_time_hr'].max() + 0.5)
+    plt.xticks(
+        ticks=list(tick_labels.keys()),
+        labels=list(tick_labels.values()),
+        rotation=45
+    )
+    start_time_min = df['start_time_hr'].min() - 0.5
+    stop_time_max = df['stop_time_hr'].max() + 0.5
+    ax.set_xlim(start_time_min, stop_time_max)
 
     plt.xlabel('Time')
     plt.ylabel('Date')
@@ -107,8 +114,19 @@ def plot_sleep_times_each_day(df, ry, yg):
 def plot_sleep_duration_by_day_of_week(df, ry, yg):
     # Box plot of sleep duration with day of week as hue
     plt.figure()
-    sns.boxplot(data=df, x='duration', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
-    sns.swarmplot(data=df, x='duration', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], dodge=True)
+    sns.boxplot(
+        data=df,
+        x='duration',
+        y='day_of_week',
+        order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    )
+    sns.swarmplot(
+        data=df,
+        x='duration',
+        y='day_of_week',
+        order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        dodge=True
+    )
     x_min, x_max = plt.xlim()
     plt.axvspan(yg, x_max, facecolor='lightgreen', alpha=0.5)
     plt.axvspan(ry, yg, facecolor='khaki', alpha=0.5)
@@ -129,23 +147,39 @@ def plot_calculated_vs_smartwatch_duration(df_notna, ry, yg):
     ymax = 11.5
 
     # Background colors
-    background_yellow_rect = patches.Rectangle((ymin, ymin), ymax - ymin, ymax - ymin, color='khaki', zorder=1)
+    background_yellow_rect = patches.Rectangle(
+        (ymin, ymin), ymax - ymin, ymax - ymin, color='khaki', zorder=1
+    )
     ax.add_patch(background_yellow_rect)
 
-    green_vertices = [[ymax, ymax], [2 * yg - ymax, ymax], [ymax, 2 * yg - ymax]]
-    green_triangle = patches.Polygon(green_vertices, closed=True, color='lightgreen', zorder=2)
+    green_vertices = [
+        [ymax, ymax],
+        [2 * yg - ymax, ymax],
+        [ymax, 2 * yg - ymax]
+    ]
+    green_triangle = patches.Polygon(
+        green_vertices, closed=True, color='lightgreen', zorder=2
+    )
     ax.add_patch(green_triangle)
 
     red_vertices = [[ymin, ymin], [2 * ry - ymin, ymin], [ymin, 2 * ry - ymin]]
-    red_triangle = patches.Polygon(red_vertices, closed=True, color='lightcoral', zorder=2)
+    red_triangle = patches.Polygon(
+        red_vertices, closed=True, color='lightcoral', zorder=2
+    )
     ax.add_patch(red_triangle)
 
     colors = {'Good': 'b', 'Fair': 'k', 'Poor': 'r'}
 
     # Halo around most recent sleep session
     most_recent = df_notna.iloc[-1]
-    ax.scatter(most_recent['duration'], most_recent['duration_smartwatch'], zorder=4, c='#FFFF14', s=100)
-    ax.scatter(df_notna['duration'], df_notna['duration_smartwatch'], zorder=5, c=df_notna['rating_smartwatch'].map(colors), s=10)
+    ax.scatter(
+        most_recent['duration'], most_recent['duration_smartwatch'],
+        zorder=4, c='#FFFF14', s=100
+    )
+    ax.scatter(
+        df_notna['duration'], df_notna['duration_smartwatch'],
+        zorder=5, c=df_notna['rating_smartwatch'].map(colors), s=10
+    )
     plt.xlabel('Calculated Duration')
     plt.ylabel('Smartwatch Duration')
     ax.set_xlim(ymin, ymax)
@@ -160,14 +194,30 @@ def plot_calculated_vs_smartwatch_duration(df_notna, ry, yg):
         10: '10:00',
         11: '11:00',
     }
-    plt.xticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
-    plt.yticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
-    handles = [Line2D([0], [0], marker='o', color='w', markerfacecolor=v, label=k, markersize=8) for k, v in colors.items()]
+    ticks = list(tick_labels.keys())
+    labels = list(tick_labels.values())
+    plt.xticks(ticks=ticks, labels=labels)
+    # ticks = list(tick_labels.keys())
+    # labels = list(tick_labels.values())
+    plt.yticks(ticks=ticks, labels=labels)
+    handles = [
+        Line2D(
+            [0], [0], marker='o', color='w', markerfacecolor=v, label=k,
+            markersize=8
+        )
+        for k, v in colors.items()
+    ]
     ax.legend(title='Sleep Rating', handles=handles, loc='upper left')
     # Dotted lines
     ax.plot([ymin, ymax], [ymin, ymax], color='blue', linestyle='--', zorder=4)
-    ax.plot([ymin + 1, ymax], [ymin, ymax - 1], color='gray', linestyle='--', zorder=4)
-    ax.plot([ymin + 2, ymax], [ymin, ymax - 2], color='gray', linestyle='--', zorder=4)
+    ax.plot(
+        [ymin + 1, ymax], [ymin, ymax - 1],
+        color='gray', linestyle='--', zorder=4
+    )
+    ax.plot(
+        [ymin + 2, ymax], [ymin, ymax - 2],
+        color='gray', linestyle='--', zorder=4
+    )
     ax.axhline(y=ry, color='gray', linestyle=':', linewidth=1, zorder=3)
     ax.axvline(x=ry, color='gray', linestyle=':', linewidth=1, zorder=3)
     ax.axhline(y=yg, color='gray', linestyle=':', linewidth=1, zorder=3)
@@ -179,7 +229,6 @@ def plot_calculated_vs_smartwatch_duration(df_notna, ry, yg):
 
 def plot_sleep_start_time(df):
     # Plot start time with moving average
-    fig = plt.figure()
     plt.plot(df['date'], df['start_time_hr'], color='black')
     plt.scatter(df['date'], df['start_time_hr'], color='black')
     plt.xlabel('Date')
@@ -187,7 +236,8 @@ def plot_sleep_start_time(df):
     plt.title('Sleep Start Time Over Time')
     # x-ticks
     tick_interval = int(len(df['date']) / 7) + 1
-    plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=tick_interval))
+    day_locator = mdates.DayLocator(interval=tick_interval)
+    plt.gca().xaxis.set_major_locator(day_locator)
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
     plt.xticks(rotation=90)
     # y-ticks
@@ -199,9 +249,13 @@ def plot_sleep_start_time(df):
         1: '1:00am',
         2: '2:00am',
     }
-    plt.yticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
+    ticks = list(tick_labels.keys())
+    labels = list(tick_labels.values())
+    plt.yticks(ticks=ticks, labels=labels)
     # Add exponential smoothing line
-    df['start_smooth'] = df['start_time_hr'].ewm(alpha=0.05, adjust=False).mean()
+    df['start_smooth'] = df['start_time_hr'].ewm(
+        alpha=0.05, adjust=False
+    ).mean()
     plt.plot(df['date'], df['start_smooth'], color='blue')
     plt.savefig('sleep_start_time.png',  bbox_inches='tight')
     plt.clf()
@@ -210,10 +264,19 @@ def plot_sleep_start_time(df):
 def plot_sleep_start_time_by_day_of_week(df):
     # Sleep Start Time by Day of Week
     plt.figure()
-    sns.boxplot(data=df, x='start_time_hr', y='day_of_week', 
-                    order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
-    sns.swarmplot(data=df, x='start_time_hr', y='day_of_week', dodge=True,
-                    order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
+    sns.boxplot(
+        data=df,
+        x='start_time_hr',
+        y='day_of_week',
+        order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    )
+    sns.swarmplot(
+        data=df,
+        x='start_time_hr',
+        y='day_of_week',
+        dodge=True,
+        order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    )
     plt.xlabel('Sleep Start Time')
     plt.ylabel('Day of Week')
     plt.title('Sleep Start Time by Day of Week')
@@ -225,15 +288,21 @@ def plot_sleep_start_time_by_day_of_week(df):
         1: '1:00am',
         2: '2:00am',
     }
-    plt.xticks(ticks=list(tick_labels.keys()), labels=list(tick_labels.values()))
+    ticks = list(tick_labels.keys())
+    labels = list(tick_labels.values())
+    plt.xticks(ticks=ticks, labels=labels)
     plt.savefig('sleep_start_time_by_day_of_week.png',  bbox_inches='tight')
     plt.clf()
     # Print mean sleep start time for each day of the week
     median_start_times = df.groupby('day_of_week')['start_time_hr'].median()
     # Add 12 to each
-    median_start_times = median_start_times.apply(lambda x: x + 12 if x < 0 else x)
+    median_start_times = median_start_times.apply(
+        lambda x: x + 12 if x < 0 else x
+    )
     # Convert from decimal to hh:mm
-    median_start_times = median_start_times.apply(lambda x: f"{int(x)}:{int((x - int(x)) * 60):02d}")
+    median_start_times = median_start_times.apply(
+        lambda x: f"{int(x)}:{int((x - int(x)) * 60):02d}"
+    )
     print("Median Sleep Start Time by Day of Week:")
     print(median_start_times)
 
@@ -241,7 +310,6 @@ def plot_sleep_start_time_by_day_of_week(df):
 def plot_sleep_score_histogram(df_notna):
     # Histogram of smartwatch score
     bin_interval = 5
-    fig = plt.figure()
     bin_min = 40
     bin_max = 100
     bin_edges = np.arange(bin_min, bin_max, bin_interval)
@@ -284,13 +352,30 @@ def plot_sleep_score_vs_duration_smartwatch(df_notna):
     colors = {'Good': 'c', 'Fair': 'gray', 'Poor': 'r'}
     # Halo around most recent sleep session
     most_recent = df_notna.iloc[-1]
-    ax.scatter(most_recent['duration_smartwatch'], most_recent['score_smartwatch'], zorder=4, c='#FFFF14', s=100)
-    ax.scatter(df_notna['duration_smartwatch'], df_notna['score_smartwatch'], zorder=5, c=df_notna['rating_smartwatch'].map(colors), s=10)
-    # sns.scatterplot(data=df_notna, x='duration_smartwatch', y='score_smartwatch', hue='rating_smartwatch')
+    ax.scatter(
+        most_recent['duration_smartwatch'],
+        most_recent['score_smartwatch'],
+        zorder=4,
+        c='#FFFF14',
+        s=100
+    )
+    ax.scatter(
+        df_notna['duration_smartwatch'],
+        df_notna['score_smartwatch'],
+        zorder=5,
+        c=df_notna['rating_smartwatch'].map(colors),
+        s=10
+    )
     plt.title('Sleep Score vs Duration')
     plt.xlabel('Smartwatch Duration (hours)')
     plt.ylabel('Sleep Score')
-    handles = [Line2D([0], [0], marker='o', color='w', markerfacecolor=v, label=k, markersize=8) for k, v in colors.items()]
+    handles = [
+        Line2D(
+            [0], [0], marker='o', color='w', markerfacecolor=v, label=k,
+            markersize=8
+        )
+        for k, v in colors.items()
+    ]
     plt.legend(title='Sleep Rating', handles=handles, loc='upper left')
     plt.savefig('sleep_score_vs_duration.png',  bbox_inches='tight')
     plt.clf()
@@ -299,8 +384,18 @@ def plot_sleep_score_vs_duration_smartwatch(df_notna):
 def plot_sleep_score_vs_day_of_week(df):
     # Box plot of sleep score with day of week as hue
     plt.figure()
-    sns.boxplot(data=df, x='score_smartwatch', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
-    sns.swarmplot(data=df, x='score_smartwatch', y='day_of_week', order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], dodge=True)
+    sns.boxplot(
+        data=df,
+        x='score_smartwatch',
+        y='day_of_week',
+        order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    )
+    sns.swarmplot(
+        data=df,
+        x='score_smartwatch',
+        y='day_of_week',
+        order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        dodge=True)
     x_min, x_max = plt.xlim()
     plt.axvspan(80, x_max, facecolor='lightgreen', alpha=0.5)
     plt.axvspan(60, 80, facecolor='khaki', alpha=0.5)
@@ -322,8 +417,12 @@ def plot_sleep(filename="sleep.csv"):
     df_notna = df.dropna(subset=['duration_smartwatch'])
 
     # Convert duration_smartwatch to float
-    df_notna.loc[:, 'duration_smartwatch'] = df_notna['duration_smartwatch'].apply(
-        lambda x: (int(x.split(':')[0]) + int(x.split(':')[1]) / 60.0) if isinstance(x, str) else 0
+    df_notna.loc[:, 'duration_smartwatch'] = df_notna[
+        'duration_smartwatch'
+    ].apply(
+        lambda x: (
+            int(x.split(':')[0]) + int(x.split(':')[1]) / 60.0
+        ) if isinstance(x, str) else 0
     )
 
     plot_sleep_duration_over_time(df, ry, yg)
