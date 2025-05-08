@@ -94,6 +94,7 @@ def plot_sleep_times_each_day(df, ry, yg):
         8: '8:00',
         9: '9:00',
         10: '10:00',
+        11: '11:00',
     }
     plt.xticks(
         ticks=list(tick_labels.keys()),
@@ -178,7 +179,7 @@ def plot_calculated_vs_smartwatch_duration(df_notna, ry, yg):
     )
     ax.scatter(
         df_notna['duration'], df_notna['duration_smartwatch'],
-        zorder=5, c=df_notna['rating_smartwatch'].map(colors), s=10
+        zorder=5, c=df_notna['rating_smartwatch'].map(colors), s=7
     )
     plt.xlabel('Calculated Duration')
     plt.ylabel('Smartwatch Duration')
@@ -248,6 +249,9 @@ def plot_sleep_start_time(df):
         0: '12:00am',
         1: '1:00am',
         2: '2:00am',
+        3: '3:00am',
+        4: '4:00am',
+        5: '5:00am',
     }
     ticks = list(tick_labels.keys())
     labels = list(tick_labels.values())
@@ -282,15 +286,18 @@ def plot_sleep_start_time_by_day_of_week(df):
     plt.title('Sleep Start Time by Day of Week')
     tick_labels = {
         -3: '9:00pm',
-        -2: '10:00pm',
-        -1: '11:00pm',
+        -2: '10:00',
+        -1: '11:00',
         0: '12:00am',
-        1: '1:00am',
-        2: '2:00am',
+        1: '1:00',
+        2: '2:00',
+        3: '3:00',
+        4: '4:00',
+        5: '5:00',
     }
     ticks = list(tick_labels.keys())
     labels = list(tick_labels.values())
-    plt.xticks(ticks=ticks, labels=labels)
+    plt.xticks(ticks=ticks, labels=labels, rotation=90)
     plt.savefig('sleep_start_time_by_day_of_week.png',  bbox_inches='tight')
     plt.clf()
     # Print mean sleep start time for each day of the week

@@ -16,11 +16,17 @@ def process_data(filename="sleep.csv"):
     # add 12 hours to the start time
     df['start'] = df['start'] + datetime.timedelta(hours=12)
     # hours after midnight of the day prior
-    df['start_time_hr'] = (df['start'] - pd.to_datetime(df['date'] + ' ' + str(midnight))).dt.total_seconds()/(60*60) - 24
+    df['start_time_hr'] = (
+        (df['start'] - pd.to_datetime(df['date'] + ' ' + str(midnight)))
+        .dt.total_seconds() / (60 * 60) - 24
+    )
     # add one day to the stop time
     df['stop'] = pd.to_datetime(df['stop']) + datetime.timedelta(days=1)
     # hours after midnight of the day prior
-    df['stop_time_hr'] = (df['stop'] - pd.to_datetime(df['date'] + ' ' + str(midnight))).dt.total_seconds()/(60*60) - 24
+    df['stop_time_hr'] = (
+        (df['stop'] - pd.to_datetime(df['date'] + ' ' + str(midnight)))
+        .dt.total_seconds()/(60*60) - 24
+    )
     df['date'] = pd.to_datetime(df['date'])
     df['duration'] = (df['stop'] - df['start']).dt.total_seconds() / (60 * 60)
     return df
