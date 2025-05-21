@@ -267,16 +267,23 @@ def plot_sleep_start_time(df):
 
 def plot_sleep_start_time_by_day_of_week(df):
     # Sleep Start Time by Day of Week
+    low = df['start_time_hr'].min() - 0.1
+    split = 1
+    high = df['start_time_hr'].max() + 0.1
+    percent = 0.9
+    df['start_time_hr_transformed'] = df['start_time_hr'].apply(piecewise_transform, args=(low, split, high, percent))
     plt.figure()
     sns.boxplot(
         data=df,
         x='start_time_hr',
+        # x='start_time_hr_transformed',
         y='day_of_week',
         order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
     )
     sns.swarmplot(
         data=df,
         x='start_time_hr',
+        # x='start_time_hr_transformed',
         y='day_of_week',
         dodge=True,
         order=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -442,6 +449,28 @@ def plot_sleep(filename="sleep.csv"):
     plot_sleep_score_histogram(df_notna)
     plot_sleep_score_vs_duration_smartwatch(df_notna)
     plot_sleep_score_vs_day_of_week(df)
+
+
+def piecewise_transform(x, low, split, high, percent):
+    """
+    Transform x to piecewise scaling.
+
+    Parameters:
+    - x: The input value to transform.
+    - low: The lower bound of the first segment.
+    - split: The upper bound of the first segment and lower bound of the second segment.
+    - high: The upper bound of the second segment.
+    - percent: The percentage of the total plot space for the first segment (0 to 1).
+
+    Returns:
+    - Transformed value in the range [0, 1].
+    """
+    if low <= x < split:
+        return low + (x - low) / (split - low) * (percent * (high - low))
+    elif split <= x <= high:
+        return low + percent * (high - low) + ((x - split) / (high - split)) * ((1 - percent) * (high - low))
+    else:
+        raise ValueError("x is out of bounds for the defined segments.")
 
 
 plot_sleep()
